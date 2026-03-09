@@ -119,15 +119,21 @@ Look for oasis could be a good choice during night since it takes more time than
 Consider sleeping when natives encountered sandstorm because they can't chase you during that time
 If you goto an mirage you will instantly lose the game if you are not in good condition
 '''
-startup = subprocess.STARTUPINFO()  # customize window startup info
-startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # enable window flag for maximizing
-startup.wShowWindow = 3  # window open maximized
+if sys.platform == "win32":
+    startup = subprocess.STARTUPINFO()  # customize window startup info
+    startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # enable window flag for maximizing
+    startup.wShowWindow = 3  # window open maximized
 if not sys.stdout.isatty():
     print("WARNING! screen refreshing feature may behave unstable outside of command terminal")
     if input("press enter to run in terminal. or enter 'N' only if you want to preceded in current environment") != 'N':
-        subprocess.Popen([sys.executable, os.path.abspath(__file__)],
-                         creationflags=subprocess.CREATE_NEW_CONSOLE, startupinfo=startup)
-        sys.exit()
+        if sys.platform == "win32":
+            subprocess.Popen([sys.executable, os.path.abspath(__file__)],
+                             creationflags=subprocess.CREATE_NEW_CONSOLE, startupinfo=startup)
+            sys.exit()
+        else:
+            subprocess.Popen([sys.executable, os.path.abspath(__file__)],
+                             creationflags=subprocess.CREATE_NEW_CONSOLE)
+            sys.exit()
     else:
         print('screen refreshing feature will be disabled by default')
         refresh = 0  # prevent screen clearing, avoid inconsistency
@@ -686,3 +692,4 @@ Your choice? """)
         vision = base_vision * f
 # end of each iteration===============================================
 input("press enter to exit")
+
