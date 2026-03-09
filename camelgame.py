@@ -435,7 +435,7 @@ while not done:  # --------------game loop--------------------------------------
         input('Press enter to attempt escaping')
         if random.randrange(0, 2):
             output("Congratulations! You are safe for now. You are 5 miles ahead of the natives")
-            native_distance = 5
+            native_distance = -5
             events['caught'] = 0
         else:
             output('You failed to escape. You lost.')
@@ -692,3 +692,4 @@ Your choice? """)
         vision = base_vision * f
 # end of each iteration===============================================
 input("press enter to exit")
+
