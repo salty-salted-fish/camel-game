@@ -224,6 +224,12 @@ def roughly(time, tiredness, rough=True):
     return time + (random.randrange(round(-tiredness), round(tiredness+1)) if rough else 0)
 
 
+def output(out):
+    print(out)
+    with open("camel.log", 'a') as log:
+        log.write(out + '\n')
+
+
 
 logging(locals())
 done = False
@@ -286,8 +292,7 @@ while not done:  # --------------game loop--------------------------------------
         approx_time = roughly(time_used, player_tiredness, not watch)
         approx_time_passed += approx_time
         player_tiredness = 0
-        print(f'You fell asleep for {"about " if not watch else ""}{approx_time} minutes because You are too tired')
-        logging(f'You fell asleep for {"about " if not watch else ""}{approx_time} minutes because You are too tired')
+        output(f'You fell asleep for {"about " if not watch else ""}{approx_time} minutes because You are too tired')
 
     events['oasis found'] += len(
         [o for o in reachable_oases if miles_traveled - vision <= o <= miles_traveled + vision]) if not (
@@ -321,31 +326,26 @@ while not done:  # --------------game loop--------------------------------------
         prev_oasis += 1
         if (miles_traveled in reachable_oases) or (
             input('you saw an oasis ahead, enter "go" to go, enter nothing to ignore:').lower() == 'go'):
-            print(f'you have found {"an oasis!" if events['oasis found'] == 1 else 
+            output(f'you have found {"an oasis!" if events['oasis found'] == 1 else 
                   f"{events['oasis found']} oases in a row!"}')
-            logging(f'you have found {"an oasis!" if events['oasis found'] == 1 else 
-                    f"{events['oasis found']} oases in a row!"}')
             thirst = 0
             drinks_left = canteen_cap
             camel_tiredness = 0
             player_tiredness = 0
         else:
-            print('you have ignored an oasis')
-            logging('you have ignored an oasis')
+            output('you have ignored an oasis')
             movement += base_vision * 2 + 1
         events['oasis found'] = 0
 
     if events['sandstorm']:
-        print("you have encountered a sandstorm!")
-        logging("you have encountered a sandstorm!")
+        output("you have encountered a sandstorm!")
         camel_tiredness += 3
         thirst += 2
         player_tiredness += 10
         time_passed += (time_used := random.randrange(50-luck, 141-luck*2))
         approx_time = roughly(time_used, player_tiredness, not watch)
         approx_time_passed += approx_time
-        print(f'It blocked you for {"roughly" if not watch else 'exactly'} {approx_time} minutes')
-        logging(f'It blocked you for {"roughly" if not watch else 'exactly'} {approx_time} minutes')
+        output(f'It blocked you for {"roughly" if not watch else 'exactly'} {approx_time} minutes')
         if thirst > 6:
             thirst = 6
         if camel_tiredness >= 8:
@@ -358,47 +358,46 @@ while not done:  # --------------game loop--------------------------------------
     if random.randrange(luck, 150) >= 140:
         if not vision_level:
             vision_level = 1
-            print("you have found a spyglass! Your vision improved")
-            logging()
+            output("you have found a spyglass! Your vision improved")
             base_vision = 3
         elif vision_level == 1 and random.randrange(0, 100) <= luck/3 - 8:
             # 1% at natural luck, 17% with maxed luck
             vision_level = 2
-            print('Congratulations! you have found a drone!')
-            print("Now you can see further than you ever could!")
+            output('Congratulations! you have found a drone!')
+            output("Now you can see further than you ever could!")
             base_vision = 10
 
     if (not watch) and random.randrange(100) <= luck - 16:
         # 10% at natural luck, 35% with maxed luck
-        print('Congratulations! you have found a pocket watch!')
+        output('Congratulations! you have found a pocket watch!')
         if random.randrange(100) <= luck*2:
         # 5% working, or 35% with maxed luck
-            print("It is in good condition! Now you can tell time accurately!")
+            output("It is in good condition! Now you can tell time accurately!")
             watch = 1
         else:
-            print("Unfortunately, it is not functioning")
+            output("Unfortunately, it is not functioning")
 
     if not random.randrange(max(120 - luck, 1)):
         canteen_cap += 3
-        print('You have found another canteen! Your water capacity has increased')
+        output('You have found another canteen! Your water capacity has increased')
 
 
 
     if events['mirage']:
         if input('you saw an oasis ahead, enter "go" to go, enter other to ignore:').lower() == 'go':
-            print('Unfortunately, it was only a mirage. You are more exhausted')
+            output('Unfortunately, it was only a mirage. You are more exhausted')
             thirst += 2
             player_tiredness += 10
             camel_tiredness += 2
         else:
-            print('you have ignored a mirage')
+            output('you have ignored a mirage')
             movement += base_vision * 2 + 1
         events['mirage'] = 0
 
     if events['native sandstorm']:
         native_distance -= (back := random.randrange(round(luck/2), luck))
         if vision_level:
-            print(f'The natives has encountered a sandstorm, they went back {back}')
+            output(f'The natives has encountered a sandstorm, they went back {back}')
 
         # event clears after native not move
 
@@ -408,44 +407,44 @@ while not done:  # --------------game loop--------------------------------------
 # situation checks====================================================
 
     if player_tiredness >= 30:
-        print("You are tired")
+        output("You are tired")
     elif player_tiredness >= 40:
-        print("You are very tired. You can barely keep your eyes open.")
+        output("You are very tired. You can barely keep your eyes open.")
 
 
-    print('you are thirsty!') if 6 >= thirst > 4 else 0
+    output('you are thirsty!') if 6 >= thirst > 4 else 0
     if thirst > 6:
-        print('you died of thirst!')
+        output('you died of thirst!')
         done = True
         break
 
     if 8 >= camel_tiredness > 5:
-        print('your camel is getting tired!')
+        output('your camel is getting tired!')
     elif camel_tiredness > 8:
-        print('your camel dead!')
+        output('your camel dead!')
         done = True
         break
 
     if native_distance >= 0:
-        print('You are caught by the natives!')
+        output('You are caught by the natives!')
         events['caught'] = 1
     elif native_distance >= -15:
-        print('The natives are getting close!')
+        output('The natives are getting close!')
 
     if events['caught']:
         input('Press enter to attempt escaping')
         if random.randrange(0, 2):
-            print("Congratulations! You are safe for now. You are 5 miles ahead of the natives")
+            output("Congratulations! You are safe for now. You are 5 miles ahead of the natives")
             native_distance = 5
             events['caught'] = 0
         else:
-            print('You failed to escape. You lost.')
+            output('You failed to escape. You lost.')
             done = True
             break
 
 
     if miles_traveled >= 200:
-        print('\nYou win!')
+        output('\nYou win!')
         done = True
         break
 
@@ -519,7 +518,7 @@ Your choice? """)
 # normal inputs-------------------------------------------------------
     if user_input == 'Q':
         done = True
-        print("quitting")
+        output("quitting")
         break
     elif user_input == 'E':
         messages.append(f'Miles traveled:  {miles_traveled} \nDrinks in canteen:  {drinks_left}')
@@ -586,7 +585,7 @@ Your choice? """)
                 approx_time = roughly(time_used, player_tiredness, not watch)
                 approx_time_passed += approx_time
                 player_tiredness = 0
-                print(f'You accidentally fell asleep for {"about " if not watch else ""}'
+                output(f'You accidentally fell asleep for {"about " if not watch else ""}'
                       f'{approx_time} minutes because You are too tired')
             else:
                 time_passed += (time_used := 60)
