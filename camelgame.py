@@ -119,7 +119,8 @@ Look for oasis could be a good choice during night since it takes more time than
 Consider sleeping when natives encountered sandstorm because they can't chase you during that time
 If you goto an mirage you will instantly lose the game if you are not in good condition
 '''
-if sys.platform == "win32":
+on_windows = sys.platform == "win32"
+if on_windows:
     startup = subprocess.STARTUPINFO()  # customize window startup info
     startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # enable window flag for maximizing
     startup.wShowWindow = 3  # window open maximized
@@ -146,7 +147,7 @@ print('enter "help" for game explanation')
 print('enter "command" for detailed command help')
 print('enter "hints" for tips')
 user_input = input('Or press enter to start!').lower()
-os.system('cls')
+os.system('cls' if on_windows else 'clear')
 
 while user_input:
     if user_input == 'command':
@@ -164,7 +165,7 @@ while user_input:
     print('enter "command" for detailed command help')
     print('enter "hints" for tips')
     user_input = input('Or press enter to start!').lower()
-    os.system('cls')
+    os.system('cls' if on_windows else 'clear')
 
 map_gen = random.Random(map_seed)
 random.seed(map_seed)
@@ -250,7 +251,7 @@ while not done:  # --------------game loop--------------------------------------
     logging('\n')
     logging()
     logging(messages)
-    os.system('cls') if refresh else 0
+    os.system('cls' if on_windows else 'clear') if refresh else 0
 
     [print(m) for m in messages]
 
@@ -692,4 +693,3 @@ Your choice? """)
         vision = base_vision * f
 # end of each iteration===============================================
 input("press enter to exit")
-
